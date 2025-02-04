@@ -1,0 +1,56 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: aws-foundation-template
+  title: AWS Foundation Terraform
+  description: Cria um novo repositório baseado no AWS Foundation Terraform.
+spec:
+  owner: team-devops
+  type: service
+
+  parameters:
+    - title: Informações do Repositório
+      required:
+        - repoName
+        - organization
+      properties:
+        repoName:
+          title: Nome do Repositório
+          type: string
+          description: Nome do novo repositório que será criado.
+        organization:
+          title: Organização do GitHub
+          type: string
+          description: Organização onde o repositório será criado.
+          default: "nttdata"
+
+  steps:
+    - id: create-repo
+      name: Criando Repositório no GitHub
+      action: github:repo:create
+      input:
+        repo: ${{ parameters.repoName }}
+        owner: ${{ parameters.organization }}
+        visibility: public
+        token: ${{ secrets.githubToken }}
+
+    - id: fetch-template
+      name: Copiando Código do AWS Foundation
+      action: fetch:template
+      input:
+        url: https://github.com/nttdata/aws-foundation-template/archive/main.zip
+        targetPath: ./workspace
+
+    - id: publish
+      name: Publicando Código no Repositório
+      action: publish:github
+      input:
+        repoUrl: github.com/${{ parameters.organization }}/${{ parameters.repoName }}
+        branch: main
+        repoVisibility: public
+        token: ${{ secrets.githubToken }}
+
+  output:
+    links:
+      - title: Repositório Criado
+        url: https://github.com/${{ parameters.organization }}/${{ parameters.repoName }}
