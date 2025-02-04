@@ -41,7 +41,7 @@ spec:
         targetPath: ./workspace
 
     - id: publish
-      name: Publicando Código no Repositório2
+      name: Publicando Código no Repositório
       action: publish:github
       input:
         repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.repoName }}
