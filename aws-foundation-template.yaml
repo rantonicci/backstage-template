@@ -44,7 +44,7 @@ spec:
       name: Publicando Código no Repositório
       action: publish:github
       input:
-        repoUrl: github.com/${{ parameters.organization }}/${{ parameters.repoName }}
+        repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.repoName }}
         branch: main
         repoVisibility: public
         token: ${{ secrets.githubToken }}
