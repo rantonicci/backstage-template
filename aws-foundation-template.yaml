@@ -29,8 +29,7 @@ spec:
       name: Criando Repositório no GitHub
       action: github:repo:create
       input:
-        repo: ${{ parameters.repoName }}
-        owner: ${{ parameters.organization }}
+        repoUrl: github.com/${{ parameters.organization }}/${{ parameters.repoName }}
         visibility: public
         token: ${{ secrets.githubToken }}
 
