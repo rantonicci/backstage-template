@@ -37,7 +37,7 @@ spec:
       name: Copiando Código do AWS Foundation
       action: fetch:template
       input:
-        url: https://github.com/nttdata/aws-foundation-template/archive/main.zip
+        url: https://github.com/rantonicci/nttdata-ccoe-backstage-aws-foundation/archive/main.zip
         targetPath: ./workspace
 
     - id: publish
