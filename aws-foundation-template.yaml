@@ -26,7 +26,7 @@ spec:
 
   steps:
     - id: create-repo
-      name: Criando Repositório no GitHub
+      name: Criando Repositório no GitHub2
       action: github:repo:create
       input:
         repoUrl: github.com/${{ parameters.organization }}/${{ parameters.repoName }}
