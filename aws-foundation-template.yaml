@@ -1,55 +1,81 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: aws-foundation-template 
-  title: AWS Foundation Terraform v3
+  name: aws-foundation-template
+  title: AWS Foundation Terraform v1
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
   type: service
 
   parameters:
-    - title: Informações do Repositório
+    - title: Informações do Projeto
       required:
-        - repoName
-        - organization
+        - component_id
+        - owner
       properties:
-        repoName:
-          title: Nome do Repositório
+        component_id:
+          title: Nome do Projeto
           type: string
           description: Nome do novo repositório que será criado.
-        organization:
-          title: Organização do GitHub
+          ui:field: EntityNamePicker
+        description:
+          title: Descrição
           type: string
-          description: Organização onde o repositório será criado.
-          default: "nttdata"
+          description: Breve descrição do projeto.
+        owner:
+          title: Dono
+          type: string
+          description: Proprietário do repositório.
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+    - title: Escolha um repositório
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: URL do Repositório
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
 
   steps:
-    - id: create-repo
-      name: Criando Repositório no GitHub2
-      action: github:repo:create
-      input:
-        repoUrl: github.com/${{ parameters.organization }}/${{ parameters.repoName }}
-        visibility: public
-        token: ${{ secrets.githubToken }}
-
     - id: fetch-template
       name: Copiando Código do AWS Foundation
       action: fetch:template
       input:
         url: https://github.com/rantonicci/nttdata-ccoe-backstage-aws-foundation/archive/main.zip
         targetPath: ./workspace
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          owner: ${{ parameters.owner }}
 
     - id: publish
       name: Publicando Código no Repositório
       action: publish:github
       input:
-        repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.repoName }}
-        branch: main
-        repoVisibility: public
-        token: ${{ secrets.githubToken }}
+        allowedHosts:
+          - github.com
+        description: Este é o repositório do projeto ${{ parameters.component_id }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+    - id: register
+      name: Registrando no Catálogo do Backstage
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
   output:
     links:
       - title: Repositório Criado
-        url: https://github.com/${{ parameters.organization }}/${{ parameters.repoName }}
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Abrir no Catálogo
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
