@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: aws-foundation-template
-  title: AWS Foundation Terraform
+  name: aws-foundation-template 
+  title: AWS Foundation Terraform v3
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
