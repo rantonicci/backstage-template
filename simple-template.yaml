@@ -1,0 +1,26 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: simple-test
+  title: Template de Teste
+  description: Um template simples para testar no Backstage.
+spec:
+  owner: team-devops
+  type: service
+
+  parameters:
+    - title: Informações do Projeto
+      required:
+        - projectName
+      properties:
+        projectName:
+          title: Nome do Projeto
+          type: string
+          description: Nome do novo projeto criado pelo template.
+
+  steps:
+    - id: log-message
+      name: Log de Teste
+      action: debug:log
+      input:
+        message: "Template de teste executado com sucesso! Nome do projeto: ${{ parameters.projectName }}"
