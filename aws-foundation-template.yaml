@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: aws-foundation-template
-  title: AWS Foundation Terraform v4
+  title: AWS Foundation Terraform v5
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
@@ -48,7 +48,7 @@ spec:
       name: Copiando Código do AWS Foundation
       action: fetch:template
       input:
-        url: https://github.com/rantonicci/nttdata-ccoe-backstage-aws-foundation/archive/main.zip
+        url: ./skeleton
         targetPath: ./workspace
         values:
           component_id: ${{ parameters.component_id }}
