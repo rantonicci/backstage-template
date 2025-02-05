@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: aws-foundation-template
-  title: AWS Foundation Terraform v6
+  title: AWS Foundation Terraform v5
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
@@ -44,16 +44,44 @@ spec:
               - github.com
 
   steps:
+    - id: fetch-template
+      name: Copiando Código do AWS Foundation
+      action: fetch:template
+      input:
+        url: https://github.com/rantonicci/nttdata-ccoe-backstage-aws-foundation/archive/main.zip
+        targetPath: ./workspace
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+
+    - id: create-catalog-info
+      name: Criando `catalog-info.yaml`
+      action: fs:write
+      input:
+        path: ./workspace/catalog-info.yaml
+        content: |
+          apiVersion: backstage.io/v1alpha1
+          kind: Component
+          metadata:
+            name: ${{ parameters.component_id }}
+            description: ${{ parameters.description }}
+          spec:
+            type: service
+            owner: ${{ parameters.owner }}
+            lifecycle: experimental
+
     - id: publish
       name: Publicando Código no Repositório
       action: publish:github
       input:
         allowedHosts:
           - github.com
-        description: Este é o repositório do projeto ${{ parameters.component_id }}
         repoUrl: ${{ parameters.repoUrl }}
-        commitMessage: "Publicando código inicial"
         branch: main
+        commitMessage: "Publicando código inicial com catalog-info.yaml"
+        files:
+          - ./workspace/*
 
     - id: wait-for-github
       name: Aguardando GitHub processar commit
