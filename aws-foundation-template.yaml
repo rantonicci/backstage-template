@@ -56,6 +56,22 @@ spec:
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
 
+    - id: create-catalog-info
+      name: Criando arquivo catalog-info.yaml
+      action: fs:write
+      input:
+        path: ./workspace/catalog-info.yaml
+        content: |
+          apiVersion: backstage.io/v1alpha1
+          kind: Component
+          metadata:
+            name: ${{ parameters.component_id }}
+            description: ${{ parameters.description }}
+          spec:
+            type: service
+            owner: ${{ parameters.owner }}
+            lifecycle: experimental
+
     - id: publish
       name: Publicando Código no Repositório
       action: publish:github
