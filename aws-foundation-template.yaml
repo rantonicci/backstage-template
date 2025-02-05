@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: aws-foundation-template
-  title: AWS Foundation Terraform v4
+  title: AWS Foundation Terraform v5
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
@@ -74,6 +74,14 @@ spec:
           - github.com
         description: Este é o repositório do projeto ${{ parameters.component_id }}
         repoUrl: ${{ parameters.repoUrl }}
+        commitMessage: "Adicionando catalog-info.yaml para registro no Backstage"
+        branch: main
+
+    - id: wait-for-github
+      name: Aguardando GitHub processar commit
+      action: debug:wait
+      input:
+        seconds: 5
 
     - id: register
       name: Registrando no Catálogo do Backstage
