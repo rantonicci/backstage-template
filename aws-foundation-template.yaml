@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: aws-foundation-template
-  title: AWS Foundation Terraform v6
+  title: AWS Foundation Terraform v1
   description: Cria um novo repositório baseado no AWS Foundation Terraform.
 spec:
   owner: team-devops
@@ -53,18 +53,18 @@ spec:
         values:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
-
-    - id: create-catalog-info
-      name: Criando `catalog-info.yaml` no template
-      action: fetch:template
-      input:
-        url: ./skeleton/catalog-info.yaml
-        targetPath: ./workspace
-        values:
-          component_id: ${{ parameters.component_id }}
-          description: ${{ parameters.description }}
-          owner: ${{ parameters.owner }}
+          catalog_info: |
+            apiVersion: backstage.io/v1alpha1
+            kind: Component
+            metadata:
+              name: ${{ parameters.component_id }}
+              description: ${{ parameters.description }}
+            spec:
+              type: service
+              owner: ${{ parameters.owner }}
+              lifecycle: experimental
 
     - id: publish
       name: Publicando Código no Repositório
@@ -72,17 +72,16 @@ spec:
       input:
         allowedHosts:
           - github.com
+        description: Este é o repositório do projeto ${{ parameters.component_id }}
         repoUrl: ${{ parameters.repoUrl }}
+        commitMessage: "Adicionando catalog-info.yaml para registro no Backstage"
         branch: main
-        commitMessage: "Publicando código inicial com catalog-info.yaml"
-        files:
-          - ./workspace/*
 
     - id: wait-for-github
       name: Aguardando GitHub processar commit
       action: debug:wait
       input:
-        seconds: 10  # Aumentado para garantir que o GitHub processe o commit
+        seconds: 5
 
     - id: register
       name: Registrando no Catálogo do Backstage
